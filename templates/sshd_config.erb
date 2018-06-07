@@ -6,10 +6,14 @@
 # possible, but leave them commented.  Uncommented options override the
 # default value.
 
-Port 22
+#Port 22
+Port <%= @port %>
 #AddressFamily any
 #ListenAddress 0.0.0.0
 #ListenAddress ::
+<% @listenaddresses.each do |listenaddress| -%>
+ListenAddress <%= listenaddress %>
+<% end -%>
 
 #HostKey __PROGRAMDATA__/ssh/ssh_host_rsa_key
 #HostKey __PROGRAMDATA__/ssh/ssh_host_dsa_key
@@ -27,6 +31,7 @@ Port 22
 
 #LoginGraceTime 2m
 #PermitRootLogin prohibit-password
+PermitRootLogin <%= @permitrootlogin %>
 #StrictModes yes
 #MaxAuthTries 6
 #MaxSessions 10
@@ -49,6 +54,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
 
 # To disable tunneled clear text passwords, change to no here!
 #PasswordAuthentication yes
+PasswordAuthentication <%= @passwordauthentication %>
 #PermitEmptyPasswords no
 
 #AllowAgentForwarding yes
