@@ -49,7 +49,7 @@ class win32_openssh
         require => Package['openssh'],
     }
 
-    # Set default shell for ssh
+    # Set default shell for ssh, unless it is set (to something) already
     $pathspec = $default_shell ? {
         undef   => '$env:programfiles\PowerShell\*\pwsh.exe;$env:programfiles\PowerShell\*\Powershell.exe;c:\windows\system32\windowspowershell\v1.0\powershell.exe',
         default => $default_shell,
@@ -57,6 +57,7 @@ class win32_openssh
 
     exec { 'Set-SSHDefaultShell.ps1':
         command  => "C:/ProgramData/chocolatey/lib/openssh/tools/Set-SSHDefaultShell.ps1 -PathSpecsToProbeForShellEXEString \"${pathspec}\"",
+        unless   => 'if ((get-itemproperty -Path HKLM:\SOFTWARE\openssh).DefaultShell) { exit 0 }',
         provider => 'powershell',
         require  => Package['openssh'],
     }

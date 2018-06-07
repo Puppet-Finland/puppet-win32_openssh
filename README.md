@@ -28,3 +28,8 @@ overridden with the $default_shell parameter, which should be in the format
 that the
 [Set-SSHDefaultShell.ps1](https://github.com/DarwinJS/ChocoPackages/blob/master/openssh/tools/Set-SSHDefaultShell.ps1)
 cmdlet expects.
+
+# Limitations
+
+Currently this module can't update the default shell once it has been set unless
+registry value HKLM:\SOFTWARE\OpenSSH\DefaultShell is removed manually.
