@@ -8,6 +8,10 @@
   "project_page": "https://github.com/Puppet-Finland/puppet-win32_openssh",
   "dependencies": [
     {
+      "name": "puppet/windows_firewall",
+      "version_requirement": ">= 2.0.0"
+    },
+    {
       "name": "puppetlabs/chocolatey",
       "version_requirement": ">= 3.0.0"
     },
