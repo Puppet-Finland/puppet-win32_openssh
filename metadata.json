@@ -2,11 +2,13 @@
   "name": "puppetfinland-win32_openssh",
   "version": "0.1.0",
   "author": "Puppet-Finland team",
-  "summary": "Setup win32-openssh",
+  "summary": "Setup OpenSSH server (win32-openssh) on Windows",
   "license": "BSD-2-Clause",
   "source": "https://github.com/Puppet-Finland/puppet-win32_openssh.git",
   "project_page": "https://github.com/Puppet-Finland/puppet-win32_openssh",
-  "dependencies": [ ],
+  "dependencies": [
+
+  ],
   "operatingsystem_support": [
     {
       "operatingsystem": "windows"
