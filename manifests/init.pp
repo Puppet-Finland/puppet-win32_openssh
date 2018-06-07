@@ -20,6 +20,10 @@
 #   Allow logins using password (yes/no). Defaults to "yes".
 # [*default_shell*]
 #   Default shell to use with ssh. See README.md for details.
+# [*disable_microsoft_ssh_server*]
+#   Disable "Microsoft SSH server" which may occupy port 22 on some Windows
+#   10 instances. It consists of three services: "ssh-agent", "sshproxy" and 
+#   "sshbroker". Valid values are true (default) and false.
 #
 class win32_openssh
 (
@@ -28,11 +32,19 @@ class win32_openssh
     Integer[1,65535]                    $port = 22,
     Enum['yes','no','without-password'] $permitrootlogin = 'yes',
     Enum['yes','no']                    $passwordauthentication = 'yes',
-    Optional[String]                    $default_shell = undef
+    Boolean                             $disable_microsoft_ssh_server = true,
+    Optional[String]                    $default_shell = undef,
 )
 {
     $listenaddresses = any2array($listenaddress)
-    $install_options = ['--params="/SSHServerFeature"']
+    $install_options = ['--params="/SSHServerFeature',"/SSHServerPort:${port}\""]
+
+    if $disable_microsoft_ssh_server {
+        service { ['ssh-agent','sshproxy','sshbroker']:
+            ensure => 'stopped',
+            enable => false,
+        }
+    }
 
     package { 'openssh':
         ensure            => $ensure,

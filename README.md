@@ -16,10 +16,11 @@ This sets up OpenSSH server with default settings. You can customize several
 basic settings:
 
     class { '::win32_openssh':
-      listenaddress          => ['0.0.0.0','::1'],
-      port                   => 10022,
-      permitrootlogin        => 'no',
-      passwordauthentication => 'no',
+      listenaddress                => ['0.0.0.0','::1'],
+      port                         => 10022,
+      permitrootlogin              => 'no',
+      passwordauthentication       => 'no',
+      disable_microsoft_ssh_server => true,
     }
 
 The default shell for SSH logins depends on what is available. If Powershell
