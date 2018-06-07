@@ -18,6 +18,8 @@
 #   Allow root logins (yes/no/without-password). Defaults to "yes".
 # [*passwordauthentication*]
 #   Allow logins using password (yes/no). Defaults to "yes".
+# [*default_shell*]
+#   Default shell to use with ssh. See README.md for details.
 #
 class win32_openssh
 (
@@ -25,7 +27,8 @@ class win32_openssh
     Variant[String,Array[String]]       $listenaddress = '0.0.0.0',
     Integer[1,65535]                    $port = 22,
     Enum['yes','no','without-password'] $permitrootlogin = 'yes',
-    Enum['yes','no']                    $passwordauthentication = 'yes'
+    Enum['yes','no']                    $passwordauthentication = 'yes',
+    Optional[String]                    $default_shell = undef
 )
 {
     $listenaddresses = any2array($listenaddress)
@@ -44,6 +47,18 @@ class win32_openssh
         name    => 'C:/ProgramData/ssh/sshd_config',
         content => template('win32_openssh/sshd_config.erb'),
         require => Package['openssh'],
+    }
+
+    # Set default shell for ssh
+    $pathspec = $default_shell ? {
+        undef   => '$env:programfiles\PowerShell\*\pwsh.exe;$env:programfiles\PowerShell\*\Powershell.exe;c:\windows\system32\windowspowershell\v1.0\powershell.exe',
+        default => $default_shell,
+    }
+
+    exec { 'Set-SSHDefaultShell.ps1':
+        command  => "C:/ProgramData/chocolatey/lib/openssh/tools/Set-SSHDefaultShell.ps1 -PathSpecsToProbeForShellEXEString \"${pathspec}\"",
+        provider => 'powershell',
+        require  => Package['openssh'],
     }
 
     if $ensure == 'present' {
