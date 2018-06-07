@@ -7,7 +7,14 @@
   "source": "https://github.com/Puppet-Finland/puppet-win32_openssh.git",
   "project_page": "https://github.com/Puppet-Finland/puppet-win32_openssh",
   "dependencies": [
-
+    {
+      "name": "puppetlabs/chocolatey",
+      "version_requirement": ">= 3.0.0"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.0.0"
+    }
   ],
   "operatingsystem_support": [
     {
