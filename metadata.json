@@ -1,6 +1,6 @@
 {
   "name": "puppetfinland-win32_openssh",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "Puppet-Finland team",
   "summary": "Setup OpenSSH server (win32-openssh) on Windows",
   "license": "BSD-2-Clause",
