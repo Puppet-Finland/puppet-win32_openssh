@@ -100,16 +100,29 @@ class win32_openssh
         $allow_address_ipv4_array = any2array($allow_address_ipv4)
         $remote_ips = join($allow_address_ipv4_array, ',')
 
+        # Set defaults so that we don't have to repeat useless parameters
+        # just to ensure the Chocolatey-generated rule is absent.
+        $firewall_defaults = {
+            'direction'  => 'in',
+            'action'     => 'Allow',
+            'protocol'   => 'TCP',
+            'local_port' => String($port),
+        }
+
+        # Remove the Chocolatey-generated rule
+        ::windows_firewall::exception { 'SSHD Port OpenSSH (chocolatey package: openssh)':
+            ensure       => 'absent',
+            display_name => 'SSHD Port OpenSSH (chocolatey package: openssh)',
+            *            => $firewall_defaults,
+        }
+
         ::windows_firewall::exception { 'SSH-in (puppet)':
             ensure       => 'present',
             display_name => 'SSH-in (puppet)',
             description  => "Allow SSH connections from ${remote_ips} to tcp port ${port}",
-            direction    => 'in',
-            action       => 'Allow',
             enabled      => 'yes',
-            protocol     => 'TCP',
-            local_port   => String($port),
             remote_ip    => $remote_ips,
+            *            => $firewall_defaults,
         }
     }
 }
