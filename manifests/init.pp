@@ -48,9 +48,14 @@ class win32_openssh
     $install_options = ['--params="/SSHServerFeature',"/SSHServerPort:${port}\""]
 
     if $disable_microsoft_ssh_server {
-        service { ['ssh-agent','sshproxy','sshbroker']:
-            ensure => 'stopped',
-            enable => false,
+        $services = ['ssh-agent','sshproxy','sshbroker']
+        $services.each |$service| {
+            if str2bool($facts["has_${service}_service"]) {
+                service { $service:
+                    ensure => 'stopped',
+                    enable => false,
+                }
+            }
         }
     }
 
