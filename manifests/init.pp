@@ -100,15 +100,16 @@ class win32_openssh
         $allow_address_ipv4_array = any2array($allow_address_ipv4)
         $remote_ips = join($allow_address_ipv4_array, ',')
 
-        ::windows_firewall::exception { "SSH-in from ${remote_ips} (puppet)":
-            ensure      => 'present',
-            description => "Allow SSH connections from ${remote_ips} to tcp port ${port}",
-            direction   => 'in',
-            action      => 'Allow',
-            enabled     => 'yes',
-            protocol    => 'TCP',
-            local_port  => String($port),
-            remote_ip   => $remote_ips,
+        ::windows_firewall::exception { 'SSH-in (puppet)':
+            ensure       => 'present',
+            display_name => 'SSH-in (puppet)',
+            description  => "Allow SSH connections from ${remote_ips} to tcp port ${port}",
+            direction    => 'in',
+            action       => 'Allow',
+            enabled      => 'yes',
+            protocol     => 'TCP',
+            local_port   => String($port),
+            remote_ip    => $remote_ips,
         }
     }
 }
