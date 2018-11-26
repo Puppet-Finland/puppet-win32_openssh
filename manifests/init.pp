@@ -104,9 +104,9 @@ class win32_openssh
         # just to ensure the Chocolatey-generated rule is absent.
         $firewall_defaults = {
             'direction'  => 'in',
-            'action'     => 'Allow',
+            'action'     => 'allow',
             'protocol'   => 'TCP',
-            'local_port' => String($port),
+            'local_port' => $port,
         }
 
         # Remove the Chocolatey-generated rule
@@ -120,7 +120,7 @@ class win32_openssh
             ensure       => 'present',
             display_name => 'SSH-in (puppet)',
             description  => "Allow SSH connections from ${remote_ips} to tcp port ${port}",
-            enabled      => 'yes',
+            enabled      => true,
             remote_ip    => $remote_ips,
             *            => $firewall_defaults,
         }
