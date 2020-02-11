@@ -73,11 +73,15 @@ class win32_openssh
       }
     }
 
+    $require_package = $manage_package ? {
+      true  => Package['openssh'],
+    }
+
     file { 'sshd_config':
         ensure  => $ensure,
         name    => 'C:/ProgramData/ssh/sshd_config',
         content => template('win32_openssh/sshd_config.erb'),
-        require => Package['openssh'],
+        require => $require_package,
     }
 
     # Set default shell for ssh, unless it is set (to something) already
