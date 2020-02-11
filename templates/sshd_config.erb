@@ -86,3 +86,7 @@ Subsystem	sftp	sftp-server.exe
 #	AllowTcpForwarding no
 #	PermitTTY no
 #	ForceCommand cvs server
+<% if @match_admin_group %>
+Match Group administrators
+  AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
+<% end %>

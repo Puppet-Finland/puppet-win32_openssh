@@ -35,6 +35,8 @@
 #   Disable "Microsoft SSH server" which may occupy port 22 on some Windows
 #   10 instances. It consists of three services: "ssh-agent", "sshproxy" and 
 #   "sshbroker". Valid values are true (default) and false.
+# [*match_admin_group*]
+#   Enable Administrators Key
 #
 class win32_openssh
 (
@@ -48,6 +50,7 @@ class win32_openssh
     Enum['yes','no']                    $passwordauthentication = 'yes',
     Enum['yes','no']                    $pubkeyauthentication = 'yes',
     Boolean                             $disable_microsoft_ssh_server = true,
+    Boolean                             $match_admin_group = false,
     Optional[String]                    $default_shell = undef,
 )
 {
