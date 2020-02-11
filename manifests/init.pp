@@ -27,6 +27,8 @@
 #   Allow root logins (yes/no/without-password). Defaults to "yes".
 # [*passwordauthentication*]
 #   Allow logins using password (yes/no). Defaults to "yes".
+# [*pubkeyauthentication*]
+#   Allow logins using pubkey (yes/no). Defaults to "yes".
 # [*default_shell*]
 #   Default shell to use with ssh. See README.md for details.
 # [*disable_microsoft_ssh_server*]
@@ -44,6 +46,7 @@ class win32_openssh
     Variant[String,Array[String]]       $allow_address_ipv4 = '127.0.0.1',
     Enum['yes','no','without-password'] $permitrootlogin = 'yes',
     Enum['yes','no']                    $passwordauthentication = 'yes',
+    Enum['yes','no']                    $pubkeyauthentication = 'yes',
     Boolean                             $disable_microsoft_ssh_server = true,
     Optional[String]                    $default_shell = undef,
 )
