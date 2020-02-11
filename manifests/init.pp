@@ -8,6 +8,9 @@
 # [*manage_packetfilter*]
 #   Whether to open port for SSH connections in the Windows Firewall or not. 
 #   Defaults to true.
+# [*manage_package*]
+#   Whether the package installation is managed or not. 
+#   Defaults to true.
 # [*ensure*]
 #   Status of win32-openssh on the system. Valid values are 'present' (default) 
 #   and 'absent'.
@@ -34,6 +37,7 @@
 class win32_openssh
 (
     Boolean                             $manage_packetfilter = true,
+    Boolean                             $manage_package = true,
     Enum['present','absent']            $ensure = 'present',
     Variant[String,Array[String]]       $listenaddress = '0.0.0.0',
     Integer[1,65535]                    $port = 22,
@@ -59,12 +63,14 @@ class win32_openssh
         }
     }
 
-    package { 'openssh':
-        ensure            => $ensure,
-        provider          => 'chocolatey',
-        install_options   => $install_options,
-        uninstall_options => $install_options,
-        require           => Class['::chocolatey'],
+    if $manage_package {
+      package { 'openssh':
+          ensure            => $ensure,
+          provider          => 'chocolatey',
+          install_options   => $install_options,
+          uninstall_options => $install_options,
+          require           => Class['::chocolatey'],
+      }
     }
 
     file { 'sshd_config':
