@@ -80,7 +80,6 @@ class win32_openssh
         ensure  => $ensure,
         name    => 'C:/ProgramData/ssh/sshd_config',
         content => template('win32_openssh/sshd_config.erb'),
-        notify  => Service['sshd'],
         require => $require_package,
     }
 
@@ -101,6 +100,7 @@ class win32_openssh
         service { 'sshd':
             ensure => 'running',
             enable => true,
+            subscribe => File['sshd_config'],
         }
     }
 
