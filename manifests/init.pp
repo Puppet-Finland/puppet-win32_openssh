@@ -63,24 +63,24 @@ class win32_openssh
         }
     }
 
-    if $manage_package {
-      package { 'openssh':
-          ensure            => $ensure,
-          provider          => 'chocolatey',
-          install_options   => $install_options,
-          uninstall_options => $install_options,
-          require           => Class['::chocolatey'],
-      }
+    package { 'openssh':
+        ensure            => $manage_package,
+        provider          => 'chocolatey',
+        install_options   => $install_options,
+        uninstall_options => $install_options,
+        require           => Class['::chocolatey'],
     }
 
     $require_package = $manage_package ? {
       true  => Package['openssh'],
+      false => Service['sshd'],
     }
 
     file { 'sshd_config':
         ensure  => $ensure,
         name    => 'C:/ProgramData/ssh/sshd_config',
         content => template('win32_openssh/sshd_config.erb'),
+        notify  => Service['sshd'],
         require => $require_package,
     }
 
@@ -94,19 +94,17 @@ class win32_openssh
         command  => "C:/ProgramData/chocolatey/lib/openssh/tools/Set-SSHDefaultShell.ps1 -PathSpecsToProbeForShellEXEString \"${pathspec}\"",
         unless   => 'if ((Get-Item -Path HKLM:\SOFTWARE\openssh -Erroraction ignore).property -contains "DefaultShell") { exit 0 } else { exit 1 }',
         provider => 'powershell',
-        require  => Package['openssh'],
+        require  => $require_package,
     }
 
     if $ensure == 'present' {
         service { 'sshd':
-            ensure  => 'running',
-            enable  => true,
-            require => File['sshd_config'],
+            ensure => 'running',
+            enable => true,
         }
     }
 
     if $manage_packetfilter {
-
         $allow_address_ipv4_array = any2array($allow_address_ipv4)
         $remote_ips = join($allow_address_ipv4_array, ',')
 
