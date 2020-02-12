@@ -8,6 +8,9 @@
 # [*manage_packetfilter*]
 #   Whether to open port for SSH connections in the Windows Firewall or not. 
 #   Defaults to true.
+# [*manage_package*]
+#   Whether the package installation is managed or not. 
+#   Defaults to true.
 # [*ensure*]
 #   Status of win32-openssh on the system. Valid values are 'present' (default) 
 #   and 'absent'.
@@ -24,23 +27,30 @@
 #   Allow root logins (yes/no/without-password). Defaults to "yes".
 # [*passwordauthentication*]
 #   Allow logins using password (yes/no). Defaults to "yes".
+# [*pubkeyauthentication*]
+#   Allow logins using pubkey (yes/no). Defaults to "yes".
 # [*default_shell*]
 #   Default shell to use with ssh. See README.md for details.
 # [*disable_microsoft_ssh_server*]
 #   Disable "Microsoft SSH server" which may occupy port 22 on some Windows
 #   10 instances. It consists of three services: "ssh-agent", "sshproxy" and 
 #   "sshbroker". Valid values are true (default) and false.
+# [*match_admin_group*]
+#   Enable Administrators Key
 #
 class win32_openssh
 (
     Boolean                             $manage_packetfilter = true,
+    Boolean                             $manage_package = true,
     Enum['present','absent']            $ensure = 'present',
     Variant[String,Array[String]]       $listenaddress = '0.0.0.0',
     Integer[1,65535]                    $port = 22,
     Variant[String,Array[String]]       $allow_address_ipv4 = '127.0.0.1',
     Enum['yes','no','without-password'] $permitrootlogin = 'yes',
     Enum['yes','no']                    $passwordauthentication = 'yes',
+    Enum['yes','no']                    $pubkeyauthentication = 'yes',
     Boolean                             $disable_microsoft_ssh_server = true,
+    Boolean                             $match_admin_group = false,
     Optional[String]                    $default_shell = undef,
 )
 {
@@ -60,18 +70,23 @@ class win32_openssh
     }
 
     package { 'openssh':
-        ensure            => $ensure,
+        ensure            => $manage_package,
         provider          => 'chocolatey',
         install_options   => $install_options,
         uninstall_options => $install_options,
         require           => Class['::chocolatey'],
     }
 
+    $require_package = $manage_package ? {
+      true  => Package['openssh'],
+      false => Service['sshd'],
+    }
+
     file { 'sshd_config':
         ensure  => $ensure,
         name    => 'C:/ProgramData/ssh/sshd_config',
         content => template('win32_openssh/sshd_config.erb'),
-        require => Package['openssh'],
+        notify  => Service['sshd'],
     }
 
     # Set default shell for ssh, unless it is set (to something) already
@@ -84,19 +99,17 @@ class win32_openssh
         command  => "C:/ProgramData/chocolatey/lib/openssh/tools/Set-SSHDefaultShell.ps1 -PathSpecsToProbeForShellEXEString \"${pathspec}\"",
         unless   => 'if ((Get-Item -Path HKLM:\SOFTWARE\openssh -Erroraction ignore).property -contains "DefaultShell") { exit 0 } else { exit 1 }',
         provider => 'powershell',
-        require  => Package['openssh'],
+        require  => $require_package,
     }
 
     if $ensure == 'present' {
         service { 'sshd':
-            ensure  => 'running',
-            enable  => true,
-            require => File['sshd_config'],
+            ensure => 'running',
+            enable => true,
         }
     }
 
     if $manage_packetfilter {
-
         $allow_address_ipv4_array = any2array($allow_address_ipv4)
         $remote_ips = join($allow_address_ipv4_array, ',')
 

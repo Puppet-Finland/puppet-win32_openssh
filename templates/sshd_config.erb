@@ -36,7 +36,7 @@ PermitRootLogin <%= @permitrootlogin %>
 #MaxAuthTries 6
 #MaxSessions 10
 
-#PubkeyAuthentication yes
+PubkeyAuthentication <%= @pubkeyauthentication %>
 
 # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
 # but this is overridden so installations will only check .ssh/authorized_keys
@@ -86,3 +86,7 @@ Subsystem	sftp	sftp-server.exe
 #	AllowTcpForwarding no
 #	PermitTTY no
 #	ForceCommand cvs server
+<% if @match_admin_group %>
+Match Group administrators
+  AuthorizedKeysFile __PROGRAMDATA__/ssh/%u/authorized_keys
+<% end %>
