@@ -88,5 +88,5 @@ Subsystem	sftp	sftp-server.exe
 #	ForceCommand cvs server
 <% if @match_admin_group %>
 Match Group administrators
-  AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
+  AuthorizedKeysFile __PROGRAMDATA__/ssh/%u/administrators_authorized_keys
 <% end %>
